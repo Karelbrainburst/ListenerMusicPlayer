@@ -610,6 +610,7 @@ public class QuickControlsFragment extends Fragment implements QuickControlsCont
         RxBus.getInstance().addSubscription(this, subscription);
     }
 
+    //更新当前歌曲信息，包括进度，状态，封面，歌名，播放模式等
     private void subscribeMetaChangedEvent() {
         Subscription subscription = RxBus.getInstance()
                 .toObservable(MetaChangedEvent.class)

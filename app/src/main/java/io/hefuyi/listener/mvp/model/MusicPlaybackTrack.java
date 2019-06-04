@@ -10,6 +10,7 @@ import io.hefuyi.listener.util.ListenerUtil;
  * It has extra meta data to determine where the track came from so that we can show the appropriate
  * song playing indicator
  * 用来记录当前播放曲目来自什么资源(专辑,歌手,播放列表或无),资源id,在资源中的序号
+ * 该类通过IDAL传值
  */
 
 public class MusicPlaybackTrack implements Parcelable{

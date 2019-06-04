@@ -44,6 +44,61 @@ public class BaseActivity extends ATEActivity implements ServiceConnection {
     private MusicPlayer.ServiceToken mToken;
     private PlaybackStatus mPlaybackStatus;
 
+
+    /**
+     * ==================================内部类==================================
+     */
+    //创建一个广播接收者，用于接收广播给自身的广播
+    private final static class PlaybackStatus extends BroadcastReceiver {
+
+        private final WeakReference<BaseActivity> mReference;
+
+
+        public PlaybackStatus(final BaseActivity activity) {
+            mReference = new WeakReference<BaseActivity>(activity);
+        }
+
+        @Override
+        public void onReceive(final Context context, final Intent intent) {
+            final String action = intent.getAction();
+            BaseActivity baseActivity = mReference.get();
+            if (baseActivity != null) {
+                if (action.equals(MusicService.META_CHANGED)) {
+                    MetaChangedEvent metaChangedEvent = new MetaChangedEvent(MusicPlayer.getCurrentAudioId(),
+                            MusicPlayer.getTrackName(), MusicPlayer.getArtistName());
+                    RxBus.getInstance().post(metaChangedEvent);
+                } else if (action.equals(MusicService.TRACK_ERROR)) {
+                    final String errorMsg = context.getString(R.string.error_playing_track);
+                    Toast.makeText(baseActivity, errorMsg, Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+    }
+
+    class initQuickControls extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+            QuickControlsFragment fragment1 = new QuickControlsFragment();
+            FragmentManager fragmentManager1 = getSupportFragmentManager();
+            fragmentManager1.beginTransaction()
+                    .replace(R.id.quickcontrols_container, fragment1).commitAllowingStateLoss();
+            return "Executed";
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+
+        }
+
+        @Override
+        protected void onPreExecute() {
+        }
+    }
+
+    /**
+     * ==================================生命周期==================================
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -141,50 +196,5 @@ public class BaseActivity extends ATEActivity implements ServiceConnection {
         return ATEUtil.getATEKey(this);
     }
 
-    private final static class PlaybackStatus extends BroadcastReceiver {
 
-        private final WeakReference<BaseActivity> mReference;
-
-
-        public PlaybackStatus(final BaseActivity activity) {
-            mReference = new WeakReference<BaseActivity>(activity);
-        }
-
-        @Override
-        public void onReceive(final Context context, final Intent intent) {
-            final String action = intent.getAction();
-            BaseActivity baseActivity = mReference.get();
-            if (baseActivity != null) {
-                if (action.equals(MusicService.META_CHANGED)) {
-                    MetaChangedEvent metaChangedEvent = new MetaChangedEvent(MusicPlayer.getCurrentAudioId(),
-                            MusicPlayer.getTrackName(), MusicPlayer.getArtistName());
-                    RxBus.getInstance().post(metaChangedEvent);
-                } else if (action.equals(MusicService.TRACK_ERROR)) {
-                    final String errorMsg = context.getString(R.string.error_playing_track);
-                    Toast.makeText(baseActivity, errorMsg, Toast.LENGTH_SHORT).show();
-                }
-            }
-        }
-    }
-
-    class initQuickControls extends AsyncTask<String, Void, String> {
-
-        @Override
-        protected String doInBackground(String... params) {
-            QuickControlsFragment fragment1 = new QuickControlsFragment();
-            FragmentManager fragmentManager1 = getSupportFragmentManager();
-            fragmentManager1.beginTransaction()
-                    .replace(R.id.quickcontrols_container, fragment1).commitAllowingStateLoss();
-            return "Executed";
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-
-        }
-
-        @Override
-        protected void onPreExecute() {
-        }
-    }
 }

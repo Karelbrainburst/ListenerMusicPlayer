@@ -14,6 +14,7 @@ import io.hefuyi.listener.util.ListenerUtil;
 
 /**
  * This keeps track of the music playback and history state of the playback service
+ * 这跟踪回放服务的音乐回放和历史状态
  */
 
 public class MusicPlaybackState {
